@@ -5,6 +5,7 @@ using System.Windows.Input;
 namespace LevelUp;
 
 // mini viewmodel for a single quest row
+// the XAML binds directly to these properties so we dont need code-behind logic for each quest
 public class QuestViewModel : INotifyPropertyChanged
 {
     private bool _isDone;
@@ -19,6 +20,7 @@ public class QuestViewModel : INotifyPropertyChanged
         {
             if (_isDone == value) return;
             _isDone = value;
+            // notify all the display properties that depend on this flag
             OnPropertyChanged();
             OnPropertyChanged(nameof(StatusIcon));
             OnPropertyChanged(nameof(StatusIconColor));
@@ -28,6 +30,7 @@ public class QuestViewModel : INotifyPropertyChanged
         }
     }
 
+    // computed display properties - the XAML just binds to these directly
     public string StatusIcon      => IsDone ? "\u2713" : "\u25cb";
     public Color  StatusIconColor => IsDone ? Color.FromArgb("#00FF88") : Color.FromArgb("#778899");
     public string ButtonText      => IsDone ? "DONE" : "COMPLETE";
@@ -40,8 +43,10 @@ public class QuestViewModel : INotifyPropertyChanged
 }
 
 // main viewmodel for the dashboard page
+// holds all the state and commands - the page just handles hardware stuff and dialogs
 public class MainPageViewModel : INotifyPropertyChanged
 {
+    // rank data - same as before just moved here so the VM owns it
     private readonly string[] rankNames      = { "E", "D", "C", "B", "A", "S" };
     private readonly string[] rankTitles     = { "Iron Hunter", "Bronze Hunter", "Silver Hunter", "Gold Hunter", "Platinum Hunter", "Shadow Monarch" };
     private readonly string[] rankColours    = { "#778899", "#5588BB", "#3D5AFE", "#7B61FF", "#9966FF", "#FFD700" };
@@ -57,20 +62,25 @@ public class MainPageViewModel : INotifyPropertyChanged
         "You have become the Shadow Monarch. Arise."
     };
 
+    // track current rank internally so we can detect changes
     private int    _rankIndex = 0;
     private string _rank      = "E";
 
-    // events raised when something happens that needs a UI response
+    // events raised when something happens that needs a UI response (dialog, sound, animation)
+    // the page subscribes to these - keeps UI stuff out of the viewmodel
     public event Func<string, string, string, Task>? RankUpOccurred;
     public event Func<string, int, bool, Task>?      QuestCompleted;
     public event Func<Task>?                          DecayOccurred;
     public event Func<Task>?                          RankMaintained;
+    public event Func<string, Task>?                  ShakeQuoteRequested;
 
+    // the 4 daily quests as their own mini-viewmodels
     public QuestViewModel StepsQuest   { get; } = new() { Name = "Walk 10,000 Steps", Description = "Daily step goal" };
     public QuestViewModel PushupsQuest { get; } = new() { Name = "Do 50 Push-ups",    Description = "Upper body strength" };
     public QuestViewModel SitupsQuest  { get; } = new() { Name = "Do 50 Sit-ups",     Description = "Core strength" };
     public QuestViewModel SquatsQuest  { get; } = new() { Name = "Do 100 Squats",     Description = "Lower body strength" };
 
+    // commands bound to the buttons in XAML
     public ICommand CompleteStepsQuestCommand   { get; }
     public ICommand CompletePushupsQuestCommand { get; }
     public ICommand CompleteSitupsQuestCommand  { get; }
@@ -80,6 +90,7 @@ public class MainPageViewModel : INotifyPropertyChanged
     public ICommand NavigateToWorkoutLogCommand { get; }
     public ICommand NavigateToHelpCommand       { get; }
     public ICommand TestNotificationCommand     { get; }
+    public ICommand TestShakeQuoteCommand       { get; }
 
     public MainPageViewModel()
     {
@@ -92,7 +103,10 @@ public class MainPageViewModel : INotifyPropertyChanged
         NavigateToWorkoutLogCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WorkoutLogPage)));
         NavigateToHelpCommand       = new Command(async () => await Shell.Current.GoToAsync(nameof(HelpPage)));
         TestNotificationCommand     = new Command(async () => await NotificationService.SendTestNotificationAsync());
+        TestShakeQuoteCommand       = new Command(TriggerShakeQuote);
     }
+
+    // ── Bindable Properties ──────────────────────────────────────────────────
 
     public int CurrentXP
     {
@@ -147,6 +161,32 @@ public class MainPageViewModel : INotifyPropertyChanged
 
     public bool SRankBannerVisible   => _rank == "S";
     public bool SimulateDecayVisible => _rank == "S";
+
+    // accessibility descriptions read aloud by screen readers (WCAG 1.1.1)
+    public string RankBadgeAccessibilityText     => $"Current rank: {_rank}, {rankTitles[_rankIndex]}";
+    public string XPProgressAccessibilityText    => $"XP progress: {Math.Round(XPProgress * 100)}% through current rank";
+    public string QuestProgressAccessibilityText => $"Quest progress: {AppState.DailyQuestsCompleted} of {AppState.MaxDailyQuests} quests completed";
+
+    // ── Internal Logic ────────────────────────────────────────────────────────
+
+    private void UpdateRank()
+    {
+        for (int i = rankThresholds.Length - 1; i >= 0; i--)
+        {
+            if (CurrentXP >= rankThresholds[i])
+            {
+                _rankIndex = i;
+                _rank = rankNames[i];
+                break;
+            }
+        }
+        OnPropertyChanged(nameof(RankLetter));
+        OnPropertyChanged(nameof(RankTitle));
+        OnPropertyChanged(nameof(RankColour));
+        OnPropertyChanged(nameof(SRankBannerVisible));
+        OnPropertyChanged(nameof(SimulateDecayVisible));
+        OnPropertyChanged(nameof(RankBadgeAccessibilityText));
+    }
 
     public async Task AddXPAsync(int amount)
     {
@@ -217,29 +257,55 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
     }
 
-    private void UpdateRank()
+    private void TriggerShakeQuote()
     {
-        for (int i = rankThresholds.Length - 1; i >= 0; i--)
-        {
-            if (CurrentXP >= rankThresholds[i])
-            {
-                _rankIndex = i;
-                _rank = rankNames[i];
-                break;
-            }
-        }
-        OnPropertyChanged(nameof(RankLetter));
-        OnPropertyChanged(nameof(RankTitle));
-        OnPropertyChanged(nameof(RankColour));
-        OnPropertyChanged(nameof(SRankBannerVisible));
-        OnPropertyChanged(nameof(SimulateDecayVisible));
+        if (ShakeQuoteRequested != null)
+            _ = ShakeQuoteRequested.Invoke(GetRandomQuote());
     }
+
+    public void SyncFromAppState()
+    {
+        UpdateRank();
+        OnPropertyChanged(nameof(CurrentXP));
+        OnPropertyChanged(nameof(XPLabelText));
+        OnPropertyChanged(nameof(XPToNextText));
+        OnPropertyChanged(nameof(XPProgress));
+        NotifyQuestProperties();
+
+        StepsQuest.IsDone   = AppState.StepsQuestDone;
+        PushupsQuest.IsDone = AppState.PushupsQuestDone;
+        SitupsQuest.IsDone  = AppState.SitupsQuestDone;
+        SquatsQuest.IsDone  = AppState.SquatsQuestDone;
+    }
+
+    // the 15 motivational quotes shown on shake
+    private static readonly string[] SystemQuotes =
+    {
+        "The system watches. Every step forward is recorded.",
+        "Pain is the price of strength. Pay it without complaint.",
+        "You are not yet at your limit. Push further.",
+        "The weak grow stronger. The strong grow unstoppable.",
+        "Even the mightiest hunters began at Rank E.",
+        "Rest is not failure. Recovery is part of the grind.",
+        "Your body remembers every rep. So does the system.",
+        "A single step taken daily outweighs a sprint taken once.",
+        "The dungeon does not care about your excuses.",
+        "Arise. Your potential has not yet been realised.",
+        "Shadows follow the strong. Keep moving.",
+        "There is no shortcut to Rank S. Only persistence.",
+        "The system has chosen you. Do not waste the opportunity.",
+        "Fatigue is temporary. Rank is permanent.",
+        "Every hunter who quit also had reasons. Rise anyway."
+    };
+
+    public static string GetRandomQuote() => SystemQuotes[Random.Shared.Next(SystemQuotes.Length)];
 
     private void NotifyQuestProperties()
     {
         OnPropertyChanged(nameof(QuestCountText));
         OnPropertyChanged(nameof(QuestProgress));
         OnPropertyChanged(nameof(QuestStatusText));
+        OnPropertyChanged(nameof(QuestProgressAccessibilityText));
     }
 
     private static void HapticClick()
