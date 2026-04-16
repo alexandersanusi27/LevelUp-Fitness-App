@@ -13,4 +13,19 @@ public static class AppState
     public static bool SitupsQuestDone      { get; set; } = false;
     public static bool SquatsQuestDone      { get; set; } = false;
     public static bool TTSEnabled           { get; set; } = true;
+
+    // writes current state to device storage so it survives app restarts
+    public static void Save()
+    {
+        Preferences.Default.Set("xp",              CurrentXP);
+        Preferences.Default.Set("ttsEnabled",      TTSEnabled);
+        Preferences.Default.Set("questsCompleted", DailyQuestsCompleted);
+        Preferences.Default.Set("workoutDone",     WorkoutQuestDone);
+        Preferences.Default.Set("stepsDone",       StepsQuestDone);
+        Preferences.Default.Set("pushupsDone",     PushupsQuestDone);
+        Preferences.Default.Set("situpsDone",      SitupsQuestDone);
+        Preferences.Default.Set("squatsDone",      SquatsQuestDone);
+        // store today's date so we can detect when midnight has passed
+        Preferences.Default.Set("lastQuestDate",   DateTime.Today.ToString("yyyy-MM-dd"));
+    }
 }
