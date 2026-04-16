@@ -47,8 +47,24 @@ public class MainPageViewModel : INotifyPropertyChanged
     private readonly string[] rankColours    = { "#778899", "#5588BB", "#3D5AFE", "#7B61FF", "#9966FF", "#FFD700" };
     private readonly int[]    rankThresholds = { 0, 200, 400, 700, 1000, 1500 };
 
+    private readonly string[] rankUpMessages =
+    {
+        "You have risen. The hunt begins.",
+        "Your power grows. The shadows stir.",
+        "The system acknowledges your strength.",
+        "Formidable. Few reach this rank.",
+        "Elite. The gates tremble before you.",
+        "You have become the Shadow Monarch. Arise."
+    };
+
     private int    _rankIndex = 0;
     private string _rank      = "E";
+
+    // events raised when something happens that needs a UI response
+    public event Func<string, string, string, Task>? RankUpOccurred;
+    public event Func<string, int, bool, Task>?      QuestCompleted;
+    public event Func<Task>?                          DecayOccurred;
+    public event Func<Task>?                          RankMaintained;
 
     public QuestViewModel StepsQuest   { get; } = new() { Name = "Walk 10,000 Steps", Description = "Daily step goal" };
     public QuestViewModel PushupsQuest { get; } = new() { Name = "Do 50 Push-ups",    Description = "Upper body strength" };
@@ -60,6 +76,7 @@ public class MainPageViewModel : INotifyPropertyChanged
     public ICommand CompleteSitupsQuestCommand  { get; }
     public ICommand CompleteSquatsQuestCommand  { get; }
     public ICommand ResetQuestsCommand          { get; }
+    public ICommand SimulateDecayCommand        { get; }
     public ICommand NavigateToWorkoutLogCommand { get; }
     public ICommand NavigateToHelpCommand       { get; }
     public ICommand TestNotificationCommand     { get; }
@@ -71,6 +88,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         CompleteSitupsQuestCommand  = new Command(async () => await CompleteQuestAsync(SitupsQuest));
         CompleteSquatsQuestCommand  = new Command(async () => await CompleteQuestAsync(SquatsQuest));
         ResetQuestsCommand          = new Command(ResetQuests);
+        SimulateDecayCommand        = new Command(async () => await SimulateDecayAsync());
         NavigateToWorkoutLogCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WorkoutLogPage)));
         NavigateToHelpCommand       = new Command(async () => await Shell.Current.GoToAsync(nameof(HelpPage)));
         TestNotificationCommand     = new Command(async () => await NotificationService.SendTestNotificationAsync());
@@ -121,6 +139,25 @@ public class MainPageViewModel : INotifyPropertyChanged
         ? "All daily quests complete! Outstanding work, Hunter."
         : "Complete quests to earn XP and rank up.";
 
+    public bool TTSEnabled
+    {
+        get => AppState.TTSEnabled;
+        set { AppState.TTSEnabled = value; OnPropertyChanged(); AppState.Save(); }
+    }
+
+    public bool SRankBannerVisible   => _rank == "S";
+    public bool SimulateDecayVisible => _rank == "S";
+
+    public async Task AddXPAsync(int amount)
+    {
+        string previousRank = _rank;
+        CurrentXP += amount;
+        UpdateRank();
+
+        if (_rank != previousRank && RankUpOccurred != null)
+            await RankUpOccurred.Invoke(_rank, rankTitles[_rankIndex], rankUpMessages[_rankIndex]);
+    }
+
     private async Task CompleteQuestAsync(QuestViewModel quest)
     {
         if (quest.IsDone) return;
@@ -135,10 +172,15 @@ public class MainPageViewModel : INotifyPropertyChanged
         if (quest == SitupsQuest)  AppState.SitupsQuestDone  = true;
         if (quest == SquatsQuest)  AppState.SquatsQuestDone  = true;
 
-        CurrentXP += AppState.XPPerQuest;
-        UpdateRank();
+        await AddXPAsync(AppState.XPPerQuest);
         NotifyQuestProperties();
         AppState.Save();
+
+        bool allDone = AppState.DailyQuestsCompleted >= AppState.MaxDailyQuests;
+        if (allDone) NotificationService.CancelDailyReminder();
+
+        if (QuestCompleted != null)
+            await QuestCompleted.Invoke(quest.Name, AppState.XPPerQuest, allDone);
     }
 
     public void ResetQuests()
@@ -160,6 +202,21 @@ public class MainPageViewModel : INotifyPropertyChanged
         AppState.Save();
     }
 
+    private async Task SimulateDecayAsync()
+    {
+        if (AppState.DailyQuestsCompleted < 2)
+        {
+            CurrentXP = 1000;
+            UpdateRank();
+            AppState.Save();
+            if (DecayOccurred != null) await DecayOccurred.Invoke();
+        }
+        else
+        {
+            if (RankMaintained != null) await RankMaintained.Invoke();
+        }
+    }
+
     private void UpdateRank()
     {
         for (int i = rankThresholds.Length - 1; i >= 0; i--)
@@ -174,6 +231,8 @@ public class MainPageViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(RankLetter));
         OnPropertyChanged(nameof(RankTitle));
         OnPropertyChanged(nameof(RankColour));
+        OnPropertyChanged(nameof(SRankBannerVisible));
+        OnPropertyChanged(nameof(SimulateDecayVisible));
     }
 
     private void NotifyQuestProperties()
