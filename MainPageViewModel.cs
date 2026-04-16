@@ -55,6 +55,27 @@ public class MainPageViewModel : INotifyPropertyChanged
     public QuestViewModel SitupsQuest  { get; } = new() { Name = "Do 50 Sit-ups",     Description = "Core strength" };
     public QuestViewModel SquatsQuest  { get; } = new() { Name = "Do 100 Squats",     Description = "Lower body strength" };
 
+    public ICommand CompleteStepsQuestCommand   { get; }
+    public ICommand CompletePushupsQuestCommand { get; }
+    public ICommand CompleteSitupsQuestCommand  { get; }
+    public ICommand CompleteSquatsQuestCommand  { get; }
+    public ICommand ResetQuestsCommand          { get; }
+    public ICommand NavigateToWorkoutLogCommand { get; }
+    public ICommand NavigateToHelpCommand       { get; }
+    public ICommand TestNotificationCommand     { get; }
+
+    public MainPageViewModel()
+    {
+        CompleteStepsQuestCommand   = new Command(async () => await CompleteQuestAsync(StepsQuest));
+        CompletePushupsQuestCommand = new Command(async () => await CompleteQuestAsync(PushupsQuest));
+        CompleteSitupsQuestCommand  = new Command(async () => await CompleteQuestAsync(SitupsQuest));
+        CompleteSquatsQuestCommand  = new Command(async () => await CompleteQuestAsync(SquatsQuest));
+        ResetQuestsCommand          = new Command(ResetQuests);
+        NavigateToWorkoutLogCommand = new Command(async () => await Shell.Current.GoToAsync(nameof(WorkoutLogPage)));
+        NavigateToHelpCommand       = new Command(async () => await Shell.Current.GoToAsync(nameof(HelpPage)));
+        TestNotificationCommand     = new Command(async () => await NotificationService.SendTestNotificationAsync());
+    }
+
     public int CurrentXP
     {
         get => AppState.CurrentXP;
@@ -94,6 +115,51 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
     }
 
+    public string QuestCountText  => $"Daily Quests Completed: {AppState.DailyQuestsCompleted} / {AppState.MaxDailyQuests}";
+    public double QuestProgress   => (double)AppState.DailyQuestsCompleted / AppState.MaxDailyQuests;
+    public string QuestStatusText => AppState.DailyQuestsCompleted >= AppState.MaxDailyQuests
+        ? "All daily quests complete! Outstanding work, Hunter."
+        : "Complete quests to earn XP and rank up.";
+
+    private async Task CompleteQuestAsync(QuestViewModel quest)
+    {
+        if (quest.IsDone) return;
+        if (AppState.DailyQuestsCompleted >= AppState.MaxDailyQuests) return;
+
+        HapticClick();
+        quest.IsDone = true;
+        AppState.DailyQuestsCompleted++;
+
+        if (quest == StepsQuest)   AppState.StepsQuestDone   = true;
+        if (quest == PushupsQuest) AppState.PushupsQuestDone = true;
+        if (quest == SitupsQuest)  AppState.SitupsQuestDone  = true;
+        if (quest == SquatsQuest)  AppState.SquatsQuestDone  = true;
+
+        CurrentXP += AppState.XPPerQuest;
+        UpdateRank();
+        NotifyQuestProperties();
+        AppState.Save();
+    }
+
+    public void ResetQuests()
+    {
+        HapticClick();
+        AppState.DailyQuestsCompleted = 0;
+        AppState.WorkoutQuestDone     = false;
+        AppState.StepsQuestDone       = false;
+        AppState.PushupsQuestDone     = false;
+        AppState.SitupsQuestDone      = false;
+        AppState.SquatsQuestDone      = false;
+
+        StepsQuest.IsDone   = false;
+        PushupsQuest.IsDone = false;
+        SitupsQuest.IsDone  = false;
+        SquatsQuest.IsDone  = false;
+
+        NotifyQuestProperties();
+        AppState.Save();
+    }
+
     private void UpdateRank()
     {
         for (int i = rankThresholds.Length - 1; i >= 0; i--)
@@ -108,6 +174,18 @@ public class MainPageViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(RankLetter));
         OnPropertyChanged(nameof(RankTitle));
         OnPropertyChanged(nameof(RankColour));
+    }
+
+    private void NotifyQuestProperties()
+    {
+        OnPropertyChanged(nameof(QuestCountText));
+        OnPropertyChanged(nameof(QuestProgress));
+        OnPropertyChanged(nameof(QuestStatusText));
+    }
+
+    private static void HapticClick()
+    {
+        try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch { }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
