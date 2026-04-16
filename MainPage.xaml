@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LevelUp.MainPage"
+             Title="LevelUp Dashboard"
+             BackgroundColor="#050510">
+
+    <!-- WCAG 2.4.2: Page Titled — every page has a meaningful title -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="700"
+                             HorizontalOptions="Center">
+
+            <!-- App Title Header -->
+            <!-- IsInAccessibleTree False on decorative label so screen readers skip it -->
+            <Label Text="[ SYSTEM NOTIFICATION ]"
+                   TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   IsInAccessibleTree="False" />
+
+            <!-- WCAG 1.3.1: heading marked at level 1 for screen readers -->
+            <Label Text="LevelUp" TextColor="White" FontSize="32" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   FontAutoScalingEnabled="True"
+                   SemanticProperties.HeadingLevel="Level1"
+                   SemanticProperties.Description="LevelUp fitness rank tracker" />
+
+            <Label Text="Fitness Rank Tracker"
+                   TextColor="#9966FF" FontSize="16"
+                   HorizontalTextAlignment="Center"
+                   IsInAccessibleTree="False" />
+
+            <Label Text="&quot;Arise. Your true strength has yet to be awakened.&quot;"
+                   TextColor="#778899" FontSize="11" FontAttributes="Italic"
+                   HorizontalTextAlignment="Center"
+                   IsInAccessibleTree="False" />
+
+            <!-- Hunter Rank Panel -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- WCAG 1.3.1: section heading at level 2 -->
+                    <Label Text="[ HUNTER RANK ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Hunter Rank section" />
+
+                    <!-- WCAG 1.1.1: rank badge has a text description for screen readers -->
+                    <Border x:Name="RankBadgeOuter"
+                            WidthRequest="100" HeightRequest="100"
+                            HorizontalOptions="Center"
+                            Stroke="#3D5AFE" StrokeThickness="4"
+                            BackgroundColor="#050510"
+                            StrokeShape="Ellipse"
+                            SemanticProperties.Description="{Binding RankBadgeAccessibilityText}">
+                        <Border WidthRequest="76" HeightRequest="76"
+                                HorizontalOptions="Center" VerticalOptions="Center"
+                                Stroke="#9966FF" StrokeThickness="2"
+                                BackgroundColor="#050510"
+                                StrokeShape="Ellipse">
+                            <Label Text="{Binding RankLetter}"
+                                   TextColor="{Binding RankColour}"
+                                   FontSize="36" FontAttributes="Bold"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   IsInAccessibleTree="False" />
+                        </Border>
+                    </Border>
+
+                    <Label Text="{Binding RankTitle}"
+                           TextColor="White" FontSize="18" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True"
+                           SemanticProperties.Description="{Binding RankTitle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Hunter Status Panel -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="[ HUNTER STATUS ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Hunter Status section" />
+
+                    <Label Text="{Binding XPLabelText}"
+                           TextColor="White" FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True"
+                           SemanticProperties.Description="{Binding XPLabelText}" />
+
+                    <Label Text="{Binding XPToNextText}"
+                           TextColor="#9966FF" FontSize="14"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True"
+                           SemanticProperties.Description="{Binding XPToNextText}" />
+
+                    <!-- WCAG 1.1.1: progress bar described for screen readers -->
+                    <ProgressBar Progress="{Binding XPProgress}"
+                                 ProgressColor="#3D5AFE"
+                                 BackgroundColor="#1A1A2E"
+                                 HeightRequest="12"
+                                 SemanticProperties.Description="{Binding XPProgressAccessibilityText}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Daily Quests Panel -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="[ DAILY QUESTS ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Daily Quests section" />
+
+                    <Label Text="{Binding QuestCountText}"
+                           TextColor="White" FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True"
+                           SemanticProperties.Description="{Binding QuestCountText}" />
+
+                    <ProgressBar Progress="{Binding QuestProgress}"
+                                 ProgressColor="#9966FF"
+                                 BackgroundColor="#1A1A2E"
+                                 HeightRequest="12"
+                                 SemanticProperties.Description="{Binding QuestProgressAccessibilityText}" />
+
+                    <Label Text="{Binding QuestStatusText}"
+                           TextColor="#778899" FontSize="13"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True" />
+
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,4"
+                             IsInAccessibleTree="False" />
+
+                    <!-- Quest: Walk 10,000 Steps -->
+                    <Grid ColumnDefinitions="28,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="{Binding StepsQuest.StatusIcon}"
+                               TextColor="{Binding StepsQuest.StatusIconColor}"
+                               FontSize="18"
+                               VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                            <Label Text="{Binding StepsQuest.Name}" TextColor="White" FontSize="14" FontAttributes="Bold"
+                                   FontAutoScalingEnabled="True" />
+                            <Label Text="{Binding StepsQuest.Description}" TextColor="#778899" FontSize="11"
+                                   FontAutoScalingEnabled="True" />
+                        </VerticalStackLayout>
+                        <!-- WCAG 2.1.1: button has hint describing action and outcome -->
+                        <Button Grid.Column="2"
+                                Text="{Binding StepsQuest.ButtonText}"
+                                IsEnabled="{Binding StepsQuest.ButtonEnabled}"
+                                BackgroundColor="{Binding StepsQuest.ButtonColor}"
+                                TextColor="White" FontSize="11" FontAttributes="Bold"
+                                CornerRadius="4" HeightRequest="36" WidthRequest="92"
+                                Command="{Binding CompleteStepsQuestCommand}"
+                                SemanticProperties.Description="Complete the Walk 10,000 Steps quest"
+                                SemanticProperties.Hint="Awards 50 XP when tapped" />
+                    </Grid>
+
+                    <!-- Quest: Do 50 Push-ups -->
+                    <Grid ColumnDefinitions="28,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="{Binding PushupsQuest.StatusIcon}"
+                               TextColor="{Binding PushupsQuest.StatusIconColor}"
+                               FontSize="18"
+                               VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                            <Label Text="{Binding PushupsQuest.Name}" TextColor="White" FontSize="14" FontAttributes="Bold"
+                                   FontAutoScalingEnabled="True" />
+                            <Label Text="{Binding PushupsQuest.Description}" TextColor="#778899" FontSize="11"
+                                   FontAutoScalingEnabled="True" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="{Binding PushupsQuest.ButtonText}"
+                                IsEnabled="{Binding PushupsQuest.ButtonEnabled}"
+                                BackgroundColor="{Binding PushupsQuest.ButtonColor}"
+                                TextColor="White" FontSize="11" FontAttributes="Bold"
+                                CornerRadius="4" HeightRequest="36" WidthRequest="92"
+                                Command="{Binding CompletePushupsQuestCommand}"
+                                SemanticProperties.Description="Complete the Do 50 Push-ups quest"
+                                SemanticProperties.Hint="Awards 50 XP when tapped" />
+                    </Grid>
+
+                    <!-- Quest: Do 50 Sit-ups -->
+                    <Grid ColumnDefinitions="28,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="{Binding SitupsQuest.StatusIcon}"
+                               TextColor="{Binding SitupsQuest.StatusIconColor}"
+                               FontSize="18"
+                               VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                            <Label Text="{Binding SitupsQuest.Name}" TextColor="White" FontSize="14" FontAttributes="Bold"
+                                   FontAutoScalingEnabled="True" />
+                            <Label Text="{Binding SitupsQuest.Description}" TextColor="#778899" FontSize="11"
+                                   FontAutoScalingEnabled="True" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="{Binding SitupsQuest.ButtonText}"
+                                IsEnabled="{Binding SitupsQuest.ButtonEnabled}"
+                                BackgroundColor="{Binding SitupsQuest.ButtonColor}"
+                                TextColor="White" FontSize="11" FontAttributes="Bold"
+                                CornerRadius="4" HeightRequest="36" WidthRequest="92"
+                                Command="{Binding CompleteSitupsQuestCommand}"
+                                SemanticProperties.Description="Complete the Do 50 Sit-ups quest"
+                                SemanticProperties.Hint="Awards 50 XP when tapped" />
+                    </Grid>
+
+                    <!-- Quest: Do 100 Squats -->
+                    <Grid ColumnDefinitions="28,*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0"
+                               Text="{Binding SquatsQuest.StatusIcon}"
+                               TextColor="{Binding SquatsQuest.StatusIconColor}"
+                               FontSize="18"
+                               VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                            <Label Text="{Binding SquatsQuest.Name}" TextColor="White" FontSize="14" FontAttributes="Bold"
+                                   FontAutoScalingEnabled="True" />
+                            <Label Text="{Binding SquatsQuest.Description}" TextColor="#778899" FontSize="11"
+                                   FontAutoScalingEnabled="True" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="{Binding SquatsQuest.ButtonText}"
+                                IsEnabled="{Binding SquatsQuest.ButtonEnabled}"
+                                BackgroundColor="{Binding SquatsQuest.ButtonColor}"
+                                TextColor="White" FontSize="11" FontAttributes="Bold"
+                                CornerRadius="4" HeightRequest="36" WidthRequest="92"
+                                Command="{Binding CompleteSquatsQuestCommand}"
+                                SemanticProperties.Description="Complete the Do 100 Squats quest"
+                                SemanticProperties.Hint="Awards 50 XP when tapped" />
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- S Rank Maintenance Warning -->
+            <Border IsVisible="{Binding SRankBannerVisible}"
+                    Stroke="#FF4444" StrokeThickness="2" Padding="14"
+                    BackgroundColor="#1A0000" StrokeShape="RoundRectangle 4"
+                    SemanticProperties.Description="Warning: Shadow Monarch maintenance required. Complete at least 2 daily quests to maintain Rank S.">
+                <Label Text="WARNING: SHADOW MONARCH MAINTENANCE REQUIRED&#x0a;Complete at least 2 daily quests to maintain Rank S."
+                       TextColor="#FF4444" FontSize="13" FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"
+                       FontAutoScalingEnabled="True"
+                       IsInAccessibleTree="False" />
+            </Border>
+
+            <!-- Settings -->
+            <Border Stroke="#3D5AFE" StrokeThickness="1" Padding="14,10"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                        <Label Text="Voice Announcements" TextColor="White" FontSize="14"
+                               FontAutoScalingEnabled="True" />
+                        <Label Text="Text-to-speech for rank-ups &amp; quests" TextColor="#778899" FontSize="11"
+                               FontAutoScalingEnabled="True" />
+                    </VerticalStackLayout>
+                    <!-- WCAG 3.3.2: switch is labelled clearly -->
+                    <Switch Grid.Column="1"
+                            IsToggled="{Binding TTSEnabled, Mode=TwoWay}"
+                            OnColor="#3D5AFE"
+                            ThumbColor="White"
+                            VerticalOptions="Center"
+                            SemanticProperties.Description="Voice announcements toggle"
+                            SemanticProperties.Hint="Enables or disables text-to-speech for rank-ups and quest completions" />
+                </Grid>
+            </Border>
+
+            <!-- Action Buttons -->
+            <Button Text="Open Workout Log"
+                    BackgroundColor="#9966FF" TextColor="White"
+                    FontSize="16" CornerRadius="4" HeightRequest="52"
+                    Command="{Binding NavigateToWorkoutLogCommand}"
+                    SemanticProperties.Description="Open Workout Log"
+                    SemanticProperties.Hint="Navigate to the exercise logging page" />
+
+            <Button Text="Hunter's Guide"
+                    BackgroundColor="#1A1A2E" TextColor="#3D5AFE"
+                    FontSize="16" CornerRadius="4" HeightRequest="52"
+                    BorderColor="#3D5AFE" BorderWidth="1"
+                    Command="{Binding NavigateToHelpCommand}"
+                    SemanticProperties.Description="Open Hunter's Guide"
+                    SemanticProperties.Hint="Navigate to the help and instructions page" />
+
+            <Button Text="Reset Daily Quests  (Test)"
+                    BackgroundColor="#1A1A2E" TextColor="#778899"
+                    FontSize="14" CornerRadius="4" HeightRequest="44"
+                    BorderColor="#3D5AFE" BorderWidth="1"
+                    Command="{Binding ResetQuestsCommand}"
+                    SemanticProperties.Description="Reset daily quests for testing purposes" />
+
+            <Button Text="Test Notification  (Demo)"
+                    BackgroundColor="#1A1A2E" TextColor="#778899"
+                    FontSize="14" CornerRadius="4" HeightRequest="44"
+                    BorderColor="#3D5AFE" BorderWidth="1"
+                    Command="{Binding TestNotificationCommand}"
+                    SemanticProperties.Description="Send a test push notification in 5 seconds" />
+
+            <Button Text="Test System Quote  (Demo)"
+                    BackgroundColor="#1A1A2E" TextColor="#778899"
+                    FontSize="14" CornerRadius="4" HeightRequest="44"
+                    BorderColor="#3D5AFE" BorderWidth="1"
+                    Command="{Binding TestShakeQuoteCommand}"
+                    SemanticProperties.Description="Trigger a random system quote, normally activated by shaking the device" />
+
+            <Button IsVisible="{Binding SimulateDecayVisible}"
+                    Text="Simulate Rank Decay"
+                    BackgroundColor="#1A0000" TextColor="#FF4444"
+                    FontSize="14" CornerRadius="4" HeightRequest="44"
+                    BorderColor="#FF4444" BorderWidth="1"
+                    Command="{Binding SimulateDecayCommand}"
+                    SemanticProperties.Description="Simulate rank decay for Rank S maintenance testing" />
+
+            <!-- Shake hint -->
+            <Label Text="[ Shake device for a system message ]"
+                   TextColor="#3D3D5C" FontSize="11" FontAttributes="Italic"
+                   HorizontalTextAlignment="Center"
+                   IsInAccessibleTree="False" />
+
+            <!-- Rank Reference Table -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="16"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="[ RANK REFERENCE ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Rank reference table" />
+
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="Rank" TextColor="#778899" FontSize="12" FontAttributes="Bold" />
+                        <Label Grid.Column="1" Text="XP Range" TextColor="#778899" FontSize="12" FontAttributes="Bold" />
+                        <Label Grid.Column="2" Text="Title" TextColor="#778899" FontSize="12" FontAttributes="Bold" />
+                    </Grid>
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,2" IsInAccessibleTree="False" />
+
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank E, 0 to 199 XP, Iron Hunter">
+                        <Label Grid.Column="0" Text="E" TextColor="#778899" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="0 – 199" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Iron Hunter" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank D, 200 to 399 XP, Bronze Hunter">
+                        <Label Grid.Column="0" Text="D" TextColor="#5588BB" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="200 – 399" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Bronze Hunter" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank C, 400 to 699 XP, Silver Hunter">
+                        <Label Grid.Column="0" Text="C" TextColor="#3D5AFE" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="400 – 699" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Silver Hunter" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank B, 700 to 999 XP, Gold Hunter">
+                        <Label Grid.Column="0" Text="B" TextColor="#7B61FF" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="700 – 999" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Gold Hunter" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank A, 1000 to 1499 XP, Platinum Hunter">
+                        <Label Grid.Column="0" Text="A" TextColor="#9966FF" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="1000 – 1499" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Platinum Hunter" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="40,110,*" ColumnSpacing="8"
+                          SemanticProperties.Description="Rank S, 1500 or more XP, Shadow Monarch">
+                        <Label Grid.Column="0" Text="S" TextColor="#FFD700" FontSize="13" FontAttributes="Bold" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="1" Text="1500+" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                        <Label Grid.Column="2" Text="Shadow Monarch" TextColor="White" FontSize="13" IsInAccessibleTree="False"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
