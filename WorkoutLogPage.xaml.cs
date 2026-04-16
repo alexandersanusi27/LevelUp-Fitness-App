@@ -2,16 +2,21 @@ namespace LevelUp;
 
 public partial class WorkoutLogPage : ContentPage
 {
+    // simple model to hold one exercise entry for the current session
     private class ExerciseEntry
     {
         public string Name   { get; set; } = "";
         public double Weight { get; set; }
         public int    Reps   { get; set; }
         public bool   Done   { get; set; } = false;
+
         public override string ToString() => $"{Name} \u2014 {Weight}kg x {Reps}";
     }
 
+    // exercises logged in the current session
     private readonly List<ExerciseEntry> exercises = new();
+
+    // tracks XP earned just on this page visit, shown in the stats bar
     private int xpEarnedOnThisPage = 0;
 
     private static void HapticClick()
@@ -27,6 +32,39 @@ public partial class WorkoutLogPage : ContentPage
     public WorkoutLogPage()
     {
         InitializeComponent();
+    }
+
+    // runs every time the page is navigated to
+    // loads history from disk and restores any exercises already logged today
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        WorkoutHistoryService.Load();
+
+        // restore todays exercises if the user left and came back (or restarted the app)
+        if (exercises.Count == 0)
+        {
+            foreach (var saved in WorkoutHistoryService.GetToday())
+            {
+                exercises.Add(new ExerciseEntry
+                {
+                    Name   = saved.Name,
+                    Weight = saved.Weight,
+                    Reps   = saved.Reps,
+                    Done   = saved.Done
+                });
+            }
+
+            // if we restored exercises, the workout quest was already counted before
+            // so mark it done to prevent awarding XP again
+            if (exercises.Count > 0)
+                AppState.WorkoutQuestDone = true;
+        }
+
+        RefreshExerciseList();
+        RefreshHistory();
+        UpdateStats();
     }
 
     // runs when the user taps "Add Exercise"
@@ -72,6 +110,7 @@ public partial class WorkoutLogPage : ContentPage
             await DisplayAlertAsync("[ QUEST COMPLETE ]", $"Workout quest complete! +{AppState.XPPerQuest} XP awarded.", "OK");
         }
 
+        // save the updated session to disk
         SaveCurrentSession();
 
         ExerciseNameEntry.Text = "";
@@ -82,6 +121,7 @@ public partial class WorkoutLogPage : ContentPage
         UpdateStats();
     }
 
+    // converts the current exercise list to SavedExercise objects and hands them to the service
     private void SaveCurrentSession()
     {
         var toSave = exercises.Select(e => new SavedExercise
@@ -94,6 +134,7 @@ public partial class WorkoutLogPage : ContentPage
         WorkoutHistoryService.SaveToday(toSave);
     }
 
+    // rebuilds the exercise list UI from scratch
     private void RefreshExerciseList()
     {
         ExerciseListContainer.Children.Clear();
@@ -145,6 +186,48 @@ public partial class WorkoutLogPage : ContentPage
         }
     }
 
+    // rebuilds the past sessions panel from the history service
+    private void RefreshHistory()
+    {
+        var history = WorkoutHistoryService.GetHistory();
+
+        HistoryPanel.IsVisible = history.Count > 0;
+        HistoryContainer.Children.Clear();
+
+        foreach (var session in history)
+        {
+            string displayDate = DateTime.TryParse(session.Date, out var dt)
+                ? dt.ToString("dd MMM yyyy")
+                : session.Date;
+
+            HistoryContainer.Children.Add(new Label
+            {
+                Text           = displayDate,
+                TextColor      = Color.FromArgb("#9966FF"),
+                FontSize       = 13,
+                FontAttributes = FontAttributes.Bold
+            });
+
+            foreach (var ex in session.Exercises)
+            {
+                HistoryContainer.Children.Add(new Label
+                {
+                    Text      = "  " + ex.ToString() + (ex.Done ? "  \u2713" : ""),
+                    TextColor = ex.Done ? Color.FromArgb("#448844") : Color.FromArgb("#AAAAAA"),
+                    FontSize  = 12
+                });
+            }
+
+            HistoryContainer.Children.Add(new BoxView
+            {
+                HeightRequest   = 1,
+                BackgroundColor = Color.FromArgb("#1A1A2E"),
+                Margin          = new Thickness(0, 4)
+            });
+        }
+    }
+
+    // updates the stats bar at the top
     private void UpdateStats()
     {
         int total     = exercises.Count;
