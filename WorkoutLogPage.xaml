@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LevelUp.WorkoutLogPage"
+             Title="Workout Log"
+             BackgroundColor="#050510">
+
+    <!-- WCAG 2.4.2: Page Titled -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="700"
+                             HorizontalOptions="Center">
+
+            <!-- Page Header -->
+            <Label Text="[ SYSTEM NOTIFICATION ]"
+                   TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   IsInAccessibleTree="False" />
+
+            <!-- WCAG 1.3.1: page heading at level 1 -->
+            <Label Text="Workout Log"
+                   TextColor="White" FontSize="28" FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   FontAutoScalingEnabled="True"
+                   SemanticProperties.HeadingLevel="Level1"
+                   SemanticProperties.Description="Workout Log page" />
+
+            <Label Text="Record your exercises to earn XP"
+                   TextColor="#9966FF" FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   FontAutoScalingEnabled="True" />
+
+            <!-- Input Panel -->
+            <Border Stroke="#9966FF" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="[ ADD EXERCISE ]"
+                           TextColor="#9966FF" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Add exercise section" />
+
+                    <!-- WCAG 3.3.2: all input fields have visible labels -->
+                    <Label Text="Exercise Name" TextColor="#778899" FontSize="13"
+                           FontAutoScalingEnabled="True" />
+                    <Entry x:Name="ExerciseNameEntry"
+                           Placeholder="e.g. Bench Press"
+                           PlaceholderColor="#445566"
+                           TextColor="White"
+                           BackgroundColor="#1A1A2E"
+                           SemanticProperties.Description="Exercise name input field"
+                           SemanticProperties.Hint="Enter the name of the exercise you performed" />
+
+                    <Label Text="Weight (kg)" TextColor="#778899" FontSize="13"
+                           FontAutoScalingEnabled="True" />
+                    <Entry x:Name="WeightEntry"
+                           Placeholder="e.g. 80"
+                           PlaceholderColor="#445566"
+                           TextColor="White"
+                           BackgroundColor="#1A1A2E"
+                           Keyboard="Numeric"
+                           SemanticProperties.Description="Weight in kilograms input field"
+                           SemanticProperties.Hint="Enter the weight used in kilograms. Enter 0 for bodyweight exercises" />
+
+                    <Label Text="Reps" TextColor="#778899" FontSize="13"
+                           FontAutoScalingEnabled="True" />
+                    <Entry x:Name="RepsEntry"
+                           Placeholder="e.g. 8"
+                           PlaceholderColor="#445566"
+                           TextColor="White"
+                           BackgroundColor="#1A1A2E"
+                           Keyboard="Numeric"
+                           SemanticProperties.Description="Repetitions input field"
+                           SemanticProperties.Hint="Enter the number of repetitions completed" />
+
+                    <Button Text="Add Exercise"
+                            BackgroundColor="#9966FF" TextColor="White"
+                            FontSize="16" FontAttributes="Bold"
+                            CornerRadius="4" HeightRequest="48"
+                            Clicked="OnAddExerciseClicked"
+                            SemanticProperties.Description="Add exercise to today's log"
+                            SemanticProperties.Hint="Validates inputs and adds the exercise. First exercise of the day awards bonus XP" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Stats Bar -->
+            <!-- WCAG 1.1.1: each stat has a description for screen readers -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="14"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2"
+                                         SemanticProperties.Description="Total exercises logged today">
+                        <Label x:Name="TotalLoggedLabel" Text="0"
+                               TextColor="#3D5AFE" FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               FontAutoScalingEnabled="True"
+                               IsInAccessibleTree="False" />
+                        <Label Text="Logged" TextColor="#778899" FontSize="11"
+                               HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2"
+                                         SemanticProperties.Description="Total exercises marked as completed">
+                        <Label x:Name="TotalCompletedLabel" Text="0"
+                               TextColor="#9966FF" FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               FontAutoScalingEnabled="True"
+                               IsInAccessibleTree="False" />
+                        <Label Text="Completed" TextColor="#778899" FontSize="11"
+                               HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="2"
+                                         SemanticProperties.Description="XP earned on this page visit">
+                        <Label x:Name="XPEarnedLabel" Text="0 XP"
+                               TextColor="#FFD700" FontSize="22" FontAttributes="Bold"
+                               HorizontalTextAlignment="Center"
+                               FontAutoScalingEnabled="True"
+                               IsInAccessibleTree="False" />
+                        <Label Text="XP Earned" TextColor="#778899" FontSize="11"
+                               HorizontalTextAlignment="Center"
+                               IsInAccessibleTree="False" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Exercise List -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="16"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="[ EXERCISE LIST ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Today's exercise list" />
+                    <Label x:Name="EmptyListLabel"
+                           Text="No exercises logged yet. Start training, Hunter."
+                           TextColor="#445566" FontSize="13" FontAttributes="Italic"
+                           HorizontalTextAlignment="Center"
+                           FontAutoScalingEnabled="True" />
+                    <VerticalStackLayout x:Name="ExerciseListContainer" Spacing="6" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Past Sessions (hidden until there is at least one previous day of data) -->
+            <Border x:Name="HistoryPanel" IsVisible="False"
+                    Stroke="#3D5AFE" StrokeThickness="2" Padding="16"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="[ PAST SESSIONS ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Past workout sessions history" />
+                    <VerticalStackLayout x:Name="HistoryContainer" Spacing="4" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
