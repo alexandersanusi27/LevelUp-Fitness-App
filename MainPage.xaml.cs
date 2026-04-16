@@ -12,11 +12,20 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+
+        // create the viewmodel and set it as the binding context for the XAML
         _vm = new MainPageViewModel();
         BindingContext = _vm;
+
+        // subscribe to viewmodel events so we can handle dialogs, sounds, and animations here
+        _vm.RankUpOccurred      += OnRankUpAsync;
+        _vm.QuestCompleted      += OnQuestCompletedAsync;
+        _vm.DecayOccurred       += OnDecayOccurredAsync;
+        _vm.RankMaintained      += OnRankMaintainedAsync;
+        _vm.ShakeQuoteRequested += OnShakeQuoteAsync;
     }
 
-    // sync the UI every time we come back to this page
+    // sync the UI every time we come back to this page (e.g. after logging a workout)
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -41,7 +50,49 @@ public partial class MainPage : ContentPage
         }
     }
 
-    // fires constantly from the sensor - calculates movement magnitude
+    // ── ViewModel Event Handlers ─────────────────────────────────────────────
+
+    private async Task OnRankUpAsync(string rank, string title, string message)
+    {
+        Vibrate(600);
+        await SoundService.PlayAsync("rank_up.wav");
+        await FlashRankUpEffect();
+        if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync($"Rank up! You have advanced to Rank {rank}: {title}. {message}");
+        await DisplayAlertAsync("[ RANK UP ]", $"You have advanced to Rank {rank}: {title}\n\n{message}", "ARISE");
+    }
+
+    private async Task OnQuestCompletedAsync(string questName, int xp, bool allDone)
+    {
+        await SoundService.PlayAsync("quest_complete.wav");
+        if (allDone)
+        {
+            HapticLong();
+            if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync("All daily quests complete! Outstanding work, Hunter.");
+            await DisplayAlertAsync("[ QUEST COMPLETE ]", "All 4 daily quests finished! The system is pleased.", "OK");
+        }
+        else
+        {
+            Vibrate(200);
+            if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync($"Quest complete! {questName}. {xp} XP awarded.");
+            await DisplayAlertAsync("[ QUEST COMPLETE ]", $"{questName} complete! +{xp} XP awarded.", "OK");
+        }
+    }
+
+    private async Task OnDecayOccurredAsync()
+    {
+        Vibrate(800);
+        await SoundService.PlayAsync("rank_decay.wav");
+        await DisplayAlertAsync("[ RANK DECAY ]", "Maintenance failed. The system has revoked your title.\nYou have fallen to Rank A: Platinum Hunter.", "Understood");
+    }
+
+    private async Task OnRankMaintainedAsync()
+    {
+        HapticLong();
+        await DisplayAlertAsync("[ RANK MAINTAINED ]", "Maintenance confirmed. Your status as Shadow Monarch endures.", "Arise");
+    }
+
+    // ── Shake Detection ──────────────────────────────────────────────────────
+
     private void OnAccelerometerReadingChanged(object? sender, AccelerometerChangedEventArgs e)
     {
         var a = e.Reading.Acceleration;
@@ -67,6 +118,31 @@ public partial class MainPage : ContentPage
             await DisplayAlertAsync("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
         }
         finally { _shakeAlertOpen = false; }
+    }
+
+    // handles the demo button quote request from the viewmodel
+    private async Task OnShakeQuoteAsync(string quote)
+    {
+        if (_shakeAlertOpen) return;
+        _shakeAlertOpen = true;
+        try
+        {
+            if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync(quote);
+            await DisplayAlertAsync("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
+        }
+        finally { _shakeAlertOpen = false; }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    // badge flashes 3 times on rank up
+    private async Task FlashRankUpEffect()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            await RankBadgeOuter.FadeToAsync(0.2, 200);
+            await RankBadgeOuter.FadeToAsync(1.0, 200);
+        }
     }
 
     private static void HapticClick()
