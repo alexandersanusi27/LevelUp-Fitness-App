@@ -276,6 +276,14 @@ public class MainPageViewModel : INotifyPropertyChanged
         PushupsQuest.IsDone = AppState.PushupsQuestDone;
         SitupsQuest.IsDone  = AppState.SitupsQuestDone;
         SquatsQuest.IsDone  = AppState.SquatsQuestDone;
+
+        // if overnight decay was applied, fire the event so the page shows the alert
+        if (AppState.DecayAppliedOnLoad)
+        {
+            AppState.DecayAppliedOnLoad = false;
+            if (DecayOccurred != null)
+                _ = DecayOccurred.Invoke();
+        }
     }
 
     // the 15 motivational quotes shown on shake

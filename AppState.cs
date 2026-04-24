@@ -30,6 +30,9 @@ public static class AppState
     // lets the user turn off the voice announcements if theyre in public lol
     public static bool TTSEnabled { get; set; } = true;
 
+    // set to true by Load() when overnight decay is applied, so the UI can show the alert
+    public static bool DecayAppliedOnLoad { get; set; } = false;
+
     // ── Persistence ──────────────────────────────────────────────────────────
 
     // writes current state to device storage so it survives app restarts
@@ -69,6 +72,14 @@ public static class AppState
         }
         else
         {
+            // check if S-rank decay should apply before resetting yesterdays quest count
+            int yesterdayQuests = Preferences.Default.Get("questsCompleted", 0);
+            if (CurrentXP >= 1500 && yesterdayQuests < 2)
+            {
+                CurrentXP = 1000;
+                DecayAppliedOnLoad = true;
+            }
+
             // new day - wipe quest flags but keep XP (rank is preserved)
             DailyQuestsCompleted = 0;
             WorkoutQuestDone     = false;
