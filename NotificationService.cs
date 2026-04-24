@@ -14,12 +14,6 @@ public static class NotificationService
     // safe to call every time the app starts - it just updates the existing schedule
     public static async Task ScheduleDailyReminderAsync()
     {
-        // ask the user for permission to send notifications
-        // on Android 13+ (API 33+) this shows a system dialog the first time
-        // on older Android it does nothing and returns true automatically
-        if (!await LocalNotificationCenter.Current.AreNotificationsEnabled())
-            await LocalNotificationCenter.Current.RequestNotificationPermissionAsync();
-
         // if 8pm today has already passed, schedule for 8pm tomorrow instead
         DateTime notifyTime = DateTime.Today.AddHours(20);
         if (DateTime.Now >= notifyTime)
