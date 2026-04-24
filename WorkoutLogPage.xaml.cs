@@ -76,19 +76,19 @@ public partial class WorkoutLogPage : ContentPage
 
         if (string.IsNullOrEmpty(name))
         {
-            await DisplayAlertAsync("[ INPUT ERROR ]", "Please enter an exercise name.", "OK");
+            await DisplayAlert("[ INPUT ERROR ]", "Please enter an exercise name.", "OK");
             return;
         }
 
         if (!double.TryParse(weightText, out double weight) || weight < 0)
         {
-            await DisplayAlertAsync("[ INPUT ERROR ]", "Please enter a valid weight (kg).", "OK");
+            await DisplayAlert("[ INPUT ERROR ]", "Please enter a valid weight (kg).", "OK");
             return;
         }
 
         if (!int.TryParse(repsText, out int reps) || reps <= 0)
         {
-            await DisplayAlertAsync("[ INPUT ERROR ]", "Please enter a valid rep count.", "OK");
+            await DisplayAlert("[ INPUT ERROR ]", "Please enter a valid rep count.", "OK");
             return;
         }
 
@@ -107,7 +107,7 @@ public partial class WorkoutLogPage : ContentPage
             xpEarnedOnThisPage += AppState.XPPerQuest;
             AppState.Save();
             Vibrate(200);
-            await DisplayAlertAsync("[ QUEST COMPLETE ]", $"Workout quest complete! +{AppState.XPPerQuest} XP awarded.", "OK");
+            await DisplayAlert("[ QUEST COMPLETE ]", $"Workout quest complete! +{AppState.XPPerQuest} XP awarded.", "OK");
         }
 
         // save the updated session to disk

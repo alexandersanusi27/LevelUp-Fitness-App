@@ -59,6 +59,8 @@
 		<Compile Remove="assessment2526\**" />
 		<EmbeddedResource Remove="assessment2526\**" />
 		<None Remove="assessment2526\**" />
+		<MauiXaml Remove="assessment2526\**" />
+		<Content Remove="assessment2526\**" />
 		<Compile Remove="Platforms\iOS\**" />
 		<Compile Remove="Platforms\MacCatalyst\**" />
 		<Compile Remove="Platforms\Windows\**" />

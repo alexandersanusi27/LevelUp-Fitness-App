@@ -58,7 +58,7 @@ public partial class MainPage : ContentPage
         await SoundService.PlayAsync("rank_up.wav");
         await FlashRankUpEffect();
         if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync($"Rank up! You have advanced to Rank {rank}: {title}. {message}");
-        await DisplayAlertAsync("[ RANK UP ]", $"You have advanced to Rank {rank}: {title}\n\n{message}", "ARISE");
+        await DisplayAlert("[ RANK UP ]", $"You have advanced to Rank {rank}: {title}\n\n{message}", "ARISE");
     }
 
     private async Task OnQuestCompletedAsync(string questName, int xp, bool allDone)
@@ -68,13 +68,13 @@ public partial class MainPage : ContentPage
         {
             HapticLong();
             if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync("All daily quests complete! Outstanding work, Hunter.");
-            await DisplayAlertAsync("[ QUEST COMPLETE ]", "All 4 daily quests finished! The system is pleased.", "OK");
+            await DisplayAlert("[ QUEST COMPLETE ]", "All 4 daily quests finished! The system is pleased.", "OK");
         }
         else
         {
             Vibrate(200);
             if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync($"Quest complete! {questName}. {xp} XP awarded.");
-            await DisplayAlertAsync("[ QUEST COMPLETE ]", $"{questName} complete! +{xp} XP awarded.", "OK");
+            await DisplayAlert("[ QUEST COMPLETE ]", $"{questName} complete! +{xp} XP awarded.", "OK");
         }
     }
 
@@ -82,13 +82,13 @@ public partial class MainPage : ContentPage
     {
         Vibrate(800);
         await SoundService.PlayAsync("rank_decay.wav");
-        await DisplayAlertAsync("[ RANK DECAY ]", "Maintenance failed. The system has revoked your title.\nYou have fallen to Rank A: Platinum Hunter.", "Understood");
+        await DisplayAlert("[ RANK DECAY ]", "Maintenance failed. The system has revoked your title.\nYou have fallen to Rank A: Platinum Hunter.", "Understood");
     }
 
     private async Task OnRankMaintainedAsync()
     {
         HapticLong();
-        await DisplayAlertAsync("[ RANK MAINTAINED ]", "Maintenance confirmed. Your status as Shadow Monarch endures.", "Arise");
+        await DisplayAlert("[ RANK MAINTAINED ]", "Maintenance confirmed. Your status as Shadow Monarch endures.", "Arise");
     }
 
     // ── Shake Detection ──────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ public partial class MainPage : ContentPage
             Vibrate(150);
             string quote = MainPageViewModel.GetRandomQuote();
             if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync(quote);
-            await DisplayAlertAsync("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
+            await DisplayAlert("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
         }
         finally { _shakeAlertOpen = false; }
     }
@@ -128,7 +128,7 @@ public partial class MainPage : ContentPage
         try
         {
             if (AppState.TTSEnabled) _ = TextToSpeech.Default.SpeakAsync(quote);
-            await DisplayAlertAsync("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
+            await DisplayAlert("[ SYSTEM MESSAGE ]", $"\"{quote}\"", "Understood");
         }
         finally { _shakeAlertOpen = false; }
     }
@@ -140,8 +140,8 @@ public partial class MainPage : ContentPage
     {
         for (int i = 0; i < 3; i++)
         {
-            await RankBadgeOuter.FadeToAsync(0.2, 200);
-            await RankBadgeOuter.FadeToAsync(1.0, 200);
+            await RankBadgeOuter.FadeTo(0.2, 200);
+            await RankBadgeOuter.FadeTo(1.0, 200);
         }
     }
 
