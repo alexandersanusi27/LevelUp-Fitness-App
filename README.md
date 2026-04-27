@@ -22,6 +22,7 @@ Basically I wanted to make working out feel like a game instead of a chore. You 
 - Shake the phone to get a random motivational quote read out loud
 - Haptic feedback and vibration on quest completion and rank-up
 - S-rank maintenance mechanic – Shadow Monarch has to do at least 2 quests a day or falls back to Rank A
+- GPS location shown on the workout log page when training
 - Accessibility throughout: screen reader support, scalable fonts, WCAG 2.1 aligned
 
 ## Tech stack
@@ -45,7 +46,7 @@ The app uses MVVM:
 ## How to run
 
 You need:
-- .NET 10 SDK
+- .NET 9 SDK
 - MAUI workload installed: `dotnet workload install maui`
 - Android SDK via Visual Studio or Android Studio
 
