@@ -19,11 +19,16 @@ public partial class WorkoutLogPage : ContentPage
     // tracks XP earned just on this page visit, shown in the stats bar
     private int xpEarnedOnThisPage = 0;
 
+    // gives the phone a small tap feeling when the user presses a button
+    // the try/catch stops the app crashing if the device doesnt support haptics (e.g. emulator)
     private static void HapticClick()
     {
         try { HapticFeedback.Default.Perform(HapticFeedbackType.Click); } catch { }
     }
 
+    // makes the phone vibrate for a set number of milliseconds
+    // used for stronger feedback like when a quest is completed
+    // the try/catch stops the app crashing if vibration isnt available
     private static void Vibrate(int milliseconds)
     {
         try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(milliseconds)); } catch { }
