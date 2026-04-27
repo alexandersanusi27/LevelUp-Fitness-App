@@ -219,6 +219,94 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Section: Notifications -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="[ NOTIFICATIONS ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Notifications section" />
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,0,0,4" AutomationProperties.IsInAccessibleTree="False" />
+                    <Label TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="LevelUp sends you a daily reminder at 8pm if you haven't finished your quests yet. Once you complete all 4 quests, the reminder is automatically cancelled for that day." />
+                    <Label TextColor="#778899" FontSize="12" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="There's also a Test Notification button on the dashboard — tap it and a notification will pop up in 5 seconds so you can see it working." />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Section: Shake Detection -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="[ SHAKE FOR A SYSTEM MESSAGE ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Shake detection section" />
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,0,0,4" AutomationProperties.IsInAccessibleTree="False" />
+                    <Label TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="The app uses your phone's accelerometer to detect when you shake it. Give your phone a shake on the main screen and you'll get a random motivational quote from the system." />
+                    <Label TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="There are 15 different quotes. If voice announcements are on, the quote gets read out loud too." />
+                    <Label TextColor="#778899" FontSize="12" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="Can't shake? Use the Test System Quote button on the dashboard to trigger one manually." />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Section: Hunter Location -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="[ HUNTER LOCATION ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Hunter location section" />
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,0,0,4" AutomationProperties.IsInAccessibleTree="False" />
+                    <Label TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="When you open the Workout Log, the app automatically grabs your GPS location and shows your coordinates on screen — like a training check-in." />
+                    <Label TextColor="#778899" FontSize="12" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="If location permission is denied or unavailable, the panel just stays hidden. No crashes, no errors." />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Section: Sound Effects -->
+            <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
+                    BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="[ SOUND EFFECTS ]"
+                           TextColor="#3D5AFE" FontSize="12" FontAttributes="Bold"
+                           SemanticProperties.HeadingLevel="Level2"
+                           SemanticProperties.Description="Sound effects section" />
+                    <BoxView HeightRequest="1" BackgroundColor="#3D5AFE" Margin="0,0,0,4" AutomationProperties.IsInAccessibleTree="False" />
+                    <Label TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                           Text="The app plays sound effects to make key moments feel more satisfying. Here's what triggers each one:" />
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
+                               VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
+                        <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                               Text="Quest complete — plays when you finish a quest." />
+                    </Grid>
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
+                               VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
+                        <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                               Text="Rank up — plays when you advance to a new rank." />
+                    </Grid>
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
+                               VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
+                        <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                               Text="Rank decay — plays when your Rank S drops due to missed maintenance." />
+                    </Grid>
+                    <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
+                               VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
+                        <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
+                               Text="Exercise added — plays when you log an exercise in the Workout Log." />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Section: Tips -->
             <Border Stroke="#3D5AFE" StrokeThickness="2" Padding="20"
                     BackgroundColor="#0A0A1A" StrokeShape="RoundRectangle 4">
@@ -245,13 +333,13 @@
                         <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
                                VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
                         <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
-                               Text="Turn off Voice Announcements using the toggle on the dashboard if you are in a public place." />
+                               Text="Turn off Voice Announcements using the toggle on the dashboard if you're in a public place." />
                     </Grid>
                     <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
                         <Label Grid.Column="0" Text="▸" TextColor="#9966FF" FontSize="14"
                                VerticalTextAlignment="Start" AutomationProperties.IsInAccessibleTree="False" />
                         <Label Grid.Column="1" TextColor="#CCCCCC" FontSize="13" LineBreakMode="WordWrap" FontAutoScalingEnabled="True"
-                               Text="Shake your device at any time to receive a motivational system message." />
+                               Text="At Rank S, make sure you do at least 2 quests a day or you'll drop back down." />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
