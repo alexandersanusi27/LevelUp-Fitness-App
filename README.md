@@ -14,14 +14,14 @@ Basically I wanted to make working out feel like a game instead of a chore. You 
 - XP system with six ranks (E → D → C → B → A → S)
 - Four daily quests: 10,000 steps, 50 push-ups, 50 sit-ups, 100 squats (50 XP each)
 - Rank-up animation (badge flash), sound effect and TTS announcement when you rank up
-- Workout log page – log exercises with weight and reps, first exercise of the day gives bonus XP
+- Workout log page where you can log exercises with weight and reps, first exercise of the day gives bonus XP
 - Last 7 days of workout history saved and shown on the log page
 - XP and quest state saved to device storage and restored on restart
 - Quests automatically reset at midnight, XP is never lost
 - Daily 8pm push notification to remind you to do your quests, cancels itself when you finish
 - Shake the phone to get a random motivational quote read out loud
 - Haptic feedback and vibration on quest completion and rank-up
-- S-rank maintenance mechanic – Shadow Monarch has to do at least 2 quests a day or falls back to Rank A
+- S-rank maintenance mechanic where Shadow Monarch has to do at least 2 quests a day or falls back to Rank A
 - GPS location shown on the workout log page when training
 - Accessibility throughout: screen reader support, scalable fonts, WCAG 2.1 aligned
 
