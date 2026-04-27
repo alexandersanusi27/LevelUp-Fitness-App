@@ -65,6 +65,30 @@ public partial class WorkoutLogPage : ContentPage
         RefreshExerciseList();
         RefreshHistory();
         UpdateStats();
+        _ = FetchLocationAsync();
+    }
+
+    // fetches the device's current GPS coordinates and displays them
+    // uses GetLastKnownLocationAsync first (fast, cached) then falls back to a live fix
+    private async Task FetchLocationAsync()
+    {
+        try
+        {
+            var location = await Geolocation.Default.GetLastKnownLocationAsync();
+            if (location == null)
+                location = await Geolocation.Default.GetLocationAsync(
+                    new GeolocationRequest(GeolocationAccuracy.Low, TimeSpan.FromSeconds(5)));
+
+            if (location != null)
+            {
+                // format as cardinal coordinates, e.g. 53.4808°N, 2.2426°W
+                string lat = $"{Math.Abs(location.Latitude):F4}°{(location.Latitude >= 0 ? "N" : "S")}";
+                string lon = $"{Math.Abs(location.Longitude):F4}°{(location.Longitude >= 0 ? "E" : "W")}";
+                LocationLabel.Text = $"{lat}, {lon}";
+                LocationPanel.IsVisible = true;
+            }
+        }
+        catch { /* location unavailable or permission denied - panel stays hidden */ }
     }
 
     // runs when the user taps "Add Exercise"
