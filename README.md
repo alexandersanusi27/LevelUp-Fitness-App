@@ -73,4 +73,4 @@ Full details are in the Hunter's Guide page inside the app, but briefly:
 - Form fields all have visible labels and hints
 - Text contrast meets the 4.5:1 minimum on dark backgrounds
 
-https://mmutube.mmu.ac.uk/media/Mobile+Computing+Level+up+app.mp4/1_ai6m3ck1
+
